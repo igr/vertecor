@@ -179,7 +179,7 @@ public class VertecXml {
 
 	// ---------------------------------------------------------------- create
 
-	public boolean storeTimeEntry(User user, TimeEntry timeEntry, LocalDate localDate) {
+	public boolean storeTimeEntry(User user, TimeEntry timeEntry) {
         return post(
         	"<Create><OffeneLeistung>" +
 		        "<bearbeiter><objref>" + user.getUserId() + "</objref></bearbeiter>" +
@@ -188,7 +188,7 @@ public class VertecXml {
 		        "<typ><objref>" + timeEntry.getServiceType().getId() + "</objref></typ>" +
 		        "<minutenInt>" + timeEntry.getMinutes() + "</minutenInt>" +
 		        "<text>" + timeEntry.getDescription() + "</text>" +
-		        "<datum>" + localDate.toString() + "</datum>"+
+		        "<datum>" + timeEntry.getDate() + "</datum>"+
 	        "</OffeneLeistung></Create>"
         ).sendAndReceive(httpResponse -> httpResponse.statusCode() == 200);
 	}

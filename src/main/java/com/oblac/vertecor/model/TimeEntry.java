@@ -7,6 +7,7 @@ public class TimeEntry {
 	private ServiceType serviceType;
 	private String description;
 	private int minutes;
+	private String date;
 
 	public Project getProject() {
 		return project;
@@ -50,6 +51,15 @@ public class TimeEntry {
 
 	public TimeEntry setMinutes(int minutes) {
 		this.minutes = minutes;
+		return this;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public TimeEntry setDate(String date) {
+		this.date = date;
 		return this;
 	}
 }
