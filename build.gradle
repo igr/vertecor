@@ -1,7 +1,8 @@
-group 'com.oblac'
-version '1.0'
 
 apply plugin: 'java'
+
+group 'com.oblac'
+version '1.1'
 
 sourceCompatibility = 1.8
 
@@ -28,8 +29,6 @@ jar {
     }
 }
 
-
-// --- wrapper ----------------------------------------------------------------
 
 wrapper {
     gradleVersion = '4.8'
