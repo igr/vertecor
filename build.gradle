@@ -1,0 +1,36 @@
+group 'com.oblac'
+version '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jodd:jodd-lagarto:5.0.0-20180612'
+    compile 'org.jodd:jodd-http:5.0.0-20180612'
+    compile 'org.jodd:jodd-json:5.0.0-20180612'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compileClasspath.files.collect {"$it.name"}.join(' '),
+                'Main-Class': 'com.oblac.vertecor.Runner'
+        )
+    }
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
+// --- wrapper ----------------------------------------------------------------
+
+wrapper {
+    gradleVersion = '4.8'
+}
