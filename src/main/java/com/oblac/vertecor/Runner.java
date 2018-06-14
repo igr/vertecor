@@ -38,7 +38,7 @@ public class Runner {
 			final boolean noCache) {
 
 		System.out.println();
-		System.out.println(Chalk256.chalk().red().on("    VERTECOR v1.1"));
+		System.out.println(Chalk256.chalk().red().on("    VERTECOR v1.2"));
 		System.out.println(Chalk256.chalk().gray().on("(coded with ❤  by igsp)"));
 		System.out.println();
 
