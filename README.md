@@ -1,4 +1,4 @@
-# VERTECOR v1.1
+# VERTECOR v1.2
 
 > Would you like to enter your logs in the Vertec faster? 
 
@@ -7,7 +7,7 @@
 Download the `jar` from the [releases](https://github.com/igr/vertecor/releases) and run it:
 
 ```bash
-java -jar vertecor-1.1.jar
+java -jar vertecor-1.2.jar
 ```
 
 The **Vertecor** is user friendly: if you don't specify arguments in the command line, it will ask for it. So, you don't have to pass anything; just run the program. However, you may speed up and automate the process by passing few or all required arguments.
