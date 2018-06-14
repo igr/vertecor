@@ -12,9 +12,9 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jodd:jodd-lagarto:5.0.0-20180612'
-    compile 'org.jodd:jodd-http:5.0.0-20180612'
-    compile 'org.jodd:jodd-json:5.0.0-20180612'
+    compile 'org.jodd:jodd-lagarto:5.0.0-20180614'
+    compile 'org.jodd:jodd-http:5.0.0-20180614'
+    compile 'org.jodd:jodd-json:5.0.0-20180614'
 }
 
 jar {

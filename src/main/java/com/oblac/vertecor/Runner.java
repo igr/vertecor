@@ -7,6 +7,7 @@ import com.oblac.vertecor.model.TimeEntry;
 import com.oblac.vertecor.model.User;
 import jodd.util.Chalk256;
 import jodd.util.StringUtil;
+import jodd.util.SystemUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,6 +37,10 @@ public class Runner {
 			final String message,
 			final String date,
 			final boolean noCache) {
+
+		if (SystemUtil.isHostWindows()) {
+			Chalk256.enabled = false;
+		}
 
 		System.out.println();
 		System.out.println(Chalk256.chalk().red().on("    VERTECOR v1.2"));
