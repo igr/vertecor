@@ -113,6 +113,7 @@ public class VertecXml {
 				"    <member>code</member>" +
 				"    <member>planwertext</member>" +
 				"    <member>aktiv</member>" +
+				"    <member>sublist</member>" +
 				" </Resultdef>" +
 				"</Query>")
 				.sendAndReceive(response -> {
@@ -123,6 +124,7 @@ public class VertecXml {
 					return new Phase()
 						.setId(nodeChildInt(phaseNode, "objid"))
 						.setActive(nodeChildBoolean(phaseNode, "aktiv"))
+						.setSubphases(nodeChildIdList(phaseNode, "sublist"))
 						.setCode(nodeChildText(phaseNode, "code"));
 				}));
 	}
@@ -162,11 +164,40 @@ public class VertecXml {
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * Loads all phases. Some phases has the subphases that has to be loaded as well.
+	 */
 	public List<Phase> loadProjectPhases(Project project) {
-		return project.getPhases().stream()
+		List<Phase> allPhases = new ArrayList<>();
+
+		project.getPhases().stream()
 			.map(this::loadPhase)
 			.filter(Phase::isActive)
-			.collect(Collectors.toList());
+			.forEach(phase -> {
+				if (phase.getSubphases().isEmpty()) {
+					allPhases.add(phase);
+				} else {
+					allPhases.addAll(loadSubphases(phase));
+				}
+			});
+		return allPhases;
+	}
+
+	private List<Phase> loadSubphases(Phase phase) {
+		List<Phase> allSubphases = new ArrayList<>();
+
+		phase.getSubphases().stream()
+			.map(this::loadPhase)
+			.filter(Phase::isActive)
+			.forEach(p -> {
+				if (p.getSubphases().isEmpty()) {
+					allSubphases.add(p);
+				} else {
+					allSubphases.addAll(loadSubphases(p));
+				}
+			});
+
+		return allSubphases;
 	}
 
 	public List<ServiceType> loadServiceTypes(Project project) {
