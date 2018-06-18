@@ -1,8 +1,11 @@
 package com.oblac.vertecor;
 
+import jodd.cli.Cli;
+
 public class CmdLineParser {
 
 	boolean noCache = false;
+	boolean clearCache = false;
 	String signature = null;
 	String message = null;
 	String hours = null;
@@ -10,6 +13,10 @@ public class CmdLineParser {
 
 	public boolean isNoCache() {
 		return noCache;
+	}
+
+	public boolean isClearCache() {
+		return clearCache;
 	}
 
 	public String getSignature() {
@@ -29,56 +36,50 @@ public class CmdLineParser {
 	}
 
 	public CmdLineParser parse(String[] args) {
-		int argCount = 0;
+		Cli cli = new Cli();
 
-		for (int i = 0, argsLength = args.length; i < argsLength; i++) {
-			final String arg = args[i];
+		cli.option()
+			.longName("nocache")
+			.description("Disables the cache - nothing will be stored locally. Existing cache will not be used.")
+			.with(v -> this.noCache = true);
 
-			// flags
+		cli.option()
+			.longName("clearcache")
+			.description("Clears the cache before the usage.")
+			.with(v -> this.noCache = true);
 
-			if (arg.equals("--nocache")) {
-				noCache = true;
-				continue;
-			}
+		cli.option()
+			.shortName("d")
+			.longName("date")
+			.with(v -> this.date = v);
 
-			// parameters
+		cli.option()
+			.shortName("m")
+			.longName("message")
+			.with(v -> this.message = v);
 
-			if (arg.equals("-d") || arg.equals("--date")) {
-				i++;
-				date = args[i];
-				continue;
-			}
+		cli.option()
+			.shortName("h")
+			.longName("hours")
+			.with(v -> this.hours = v);
 
-			if (arg.equals("-m") || arg.equals("--message")) {
-				i++;
-				message = args[i];
-				continue;
-			}
+		cli.param()
+			.label("IDS")
+			.description("Project-phase-type IDs")
+			.with(v -> this.signature = v[0]);
 
-			if (arg.equals("-h") || arg.equals("--hours")) {
-				i++;
-				hours = args[i];
-				continue;
-			}
+		cli.param()
+			.label("HOURS")
+			.description("Working hours")
+			.with(v -> this.hours = v[0]);
 
-			// arguments
+		cli.param()
+			.label("DESCRIPTION")
+			.description("Description message")
+			.with(v -> this.message = v[0]);
 
-			if (argCount == 0) {
-				signature = arg;
-				argCount++;
-				continue;
-			}
-			if (argCount == 1) {
-				hours = arg;
-				argCount++;
-				continue;
-			}
-			if (argCount == 2) {
-				message = arg;
-				argCount++;
-				continue;
-			}
-		}
+		cli.accept(args);
+
 		return this;
 	}
 }
