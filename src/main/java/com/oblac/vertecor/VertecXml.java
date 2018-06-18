@@ -22,11 +22,8 @@ public class VertecXml {
 	private VertecCredentials credentials;
 	private String token;
 
-	public VertecXml(boolean noCache) {
-		this.cache = new Cache();
-		if (noCache) {
-			this.cache.clean();
-		}
+	public VertecXml(final Cache cache) {
+		this.cache = cache;
 	}
 
 	/**

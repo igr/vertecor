@@ -10,16 +10,28 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.function.Supplier;
 
+/**
+ * Simple JSON cache.
+ */
 public class Cache {
 
 	private final File cacheFolder;
+	private final boolean disabled;
 
-	public Cache() {
+	public Cache(final boolean noCache, final boolean clearCache) {
+		this.disabled = noCache;
 		this.cacheFolder = new File(SystemUtil.info().getHomeDir(), ".vertec");
 		this.cacheFolder.mkdir();
+
+		if (clearCache) {
+			clear();
+		}
 	}
 
-	public synchronized void clean() {
+	/**
+	 * Clears the cache, what else.
+	 */
+	public synchronized void clear() {
 		try {
 			FileUtil.deleteDir(cacheFolder);
 		} catch (IOException ioex) {
@@ -40,6 +52,9 @@ public class Cache {
 	}
 
 	private <T> T loadFromCache(Object id, Class<T> type) {
+		if (disabled) {
+			return null;
+		}
 		File cacheFile = new File(cacheFolder, id.toString() + ".json");
 
 		if (!cacheFile.exists()) {
@@ -56,6 +71,9 @@ public class Cache {
 	}
 
 	private void storeToCache(Object id, Object object) {
+		if (disabled) {
+			return;
+		}
 		File cacheFile = new File(cacheFolder, id.toString() + ".json");
 
 		String json = JsonSerializer.create().deep(true).serialize(object);

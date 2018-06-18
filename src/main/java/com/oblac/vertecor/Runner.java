@@ -23,12 +23,15 @@ public class Runner {
 	public static void main(String[] args) {
 		CmdLineParser in = new CmdLineParser().parse(args);
 
+		final Cache cache = new Cache(in.isNoCache(), in.isClearCache());
+
 		new Runner().letsgo(
 			in.getSignature(),
 			in.getHours(),
 			in.getMessage(),
 			in.getDate(),
-			in.isNoCache());
+			cache
+		);
 	}
 
 	private void letsgo(
@@ -36,18 +39,19 @@ public class Runner {
 			final String hours,
 			final String message,
 			final String date,
-			final boolean noCache) {
+			final Cache cache
+	) {
 
 		if (SystemUtil.info().isWindows()) {
 			Chalk256.enabled = false;
 		}
 
 		System.out.println();
-		System.out.println(Chalk256.chalk().red().on("    VERTECOR v1.2"));
+		System.out.println(Chalk256.chalk().red().on("    VERTECOR v2.0"));
 		System.out.println(Chalk256.chalk().gray().on("(coded with ❤  by igsp)"));
 		System.out.println();
 
-		final VertecXml vertecXml = new VertecXml(noCache);
+		final VertecXml vertecXml = new VertecXml(cache);
 
 		final VertecCredentials vs = pickVertecCredentials(vertecXml);
 
@@ -257,7 +261,7 @@ public class Runner {
 		}
 	}
 
-	private double readDouble(String message) {
+	private double readDouble(final String message) {
 		while (true) {
 			String line = readLine(message);
 			double value;
