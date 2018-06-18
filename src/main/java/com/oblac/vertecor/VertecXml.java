@@ -10,9 +10,8 @@ import jodd.http.HttpResponse;
 import jodd.lagarto.dom.Document;
 import jodd.lagarto.dom.LagartoDOMBuilder;
 import jodd.lagarto.dom.Node;
-import jodd.util.net.MimeTypes;
+import jodd.net.MimeTypes;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

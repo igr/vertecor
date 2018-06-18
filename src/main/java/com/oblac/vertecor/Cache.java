@@ -3,7 +3,7 @@ package com.oblac.vertecor;
 import jodd.io.FileUtil;
 import jodd.json.JsonParser;
 import jodd.json.JsonSerializer;
-import jodd.util.SystemUtil;
+import jodd.system.SystemUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class Cache {
 	private final File cacheFolder;
 
 	public Cache() {
-		this.cacheFolder = new File(SystemUtil.userHome(), ".vertec");
+		this.cacheFolder = new File(SystemUtil.info().getHomeDir(), ".vertec");
 		this.cacheFolder.mkdir();
 	}
 

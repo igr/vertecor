@@ -5,9 +5,9 @@ import com.oblac.vertecor.model.Project;
 import com.oblac.vertecor.model.ServiceType;
 import com.oblac.vertecor.model.TimeEntry;
 import com.oblac.vertecor.model.User;
-import jodd.util.Chalk256;
+import jodd.chalk.Chalk256;
+import jodd.system.SystemUtil;
 import jodd.util.StringUtil;
-import jodd.util.SystemUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class Runner {
 			final String date,
 			final boolean noCache) {
 
-		if (SystemUtil.isHostWindows()) {
+		if (SystemUtil.info().isWindows()) {
 			Chalk256.enabled = false;
 		}
 
