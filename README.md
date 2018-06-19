@@ -1,20 +1,24 @@
-# VERTECOR v1.2
+# VERTECOR v2.0
 
-> Would you like to enter your logs in the Vertec faster? 
+> Who likes faster Vertec? 
 
 ## Usage
 
-Download the `jar` from the [releases](https://github.com/igr/vertecor/releases) and run it:
+Download the `jar` from the [releases](https://github.com/igr/vertecor/releases) and run it. You can use it in the CLI or with the GUI. 
+
+### GUI mode
+
+If you don't like command line then just run the GUI:
 
 ```bash
-java -jar vertecor-1.2.jar
+java -jar vertecor.jar --ui
 ```
 
-The **Vertecor** is user friendly: if you don't specify arguments in the command line, it will ask for it. So, you don't have to pass anything; just run the program. However, you may speed up and automate the process by passing few or all required arguments.
+It's just GUI. It's self-explanatory. 
 
-Here are some usage scenarios.
+![](ui.png)
 
-### Interactive mode
+### CLI mode
 
 This is the default mode, when no argument is provided:
 
@@ -22,24 +26,26 @@ This is the default mode, when no argument is provided:
 java -jar vertecor.jar
 ```
 
+The **Vertecor** is user friendly: if you don't specify arguments in the command line, it will ask for it. So, you don't have to pass anything; just run the program. However, you may speed up and automate the process by passing few or all required arguments.
+
 **Vertecor** will now aks for all the data. Something like this:
 
 ![](v1.png)
 
-The only thing you can't enter like this is a `date` - the current date is assumed.
+## Program arguments
 
-### Program arguments
-
-As said, you can optionally pass one or more arguments from cli. Arguments can be _parameters_ or _options_.
+You can optionally pass one or more arguments from CLI:
 
 Options are:
 
-+ `--nocache` - clears the cache before the usage
-+ `-d | --date <date>` - specifies the date in ISO format
++ `--ui` - runs the UI.
++ `--nocache` - ignores local cache. _No cache_ will be created or consumed, everything will be (slowly) fetched from the server.
++ `--clearcache` - clears the cache _before_ the execution. New cache will be created.
++ `-d | --date <date>` - the date in ISO format (`yyyy-MM-dd`).
 + `-m | --message <message>` - specifies the description
 + `-h | --hours <hours>` - the decimal amount of spent hours
 
-There are 3 parameters (they take precedence over the options):
+There are 3 parameters:
 
 ```
 <project-phase-type> [<hours> [<message>]]
@@ -51,39 +57,50 @@ Parameters are:
 + `hours` - decimal value for spent hours
 + `message` - description
 
-Again, you may specify _anything_ you want. Whatever is not defined by command line arguments, the **Vertecor** will ask for.
+You may specify _anything_ you want, everything is optional. The **Vertecor** will ask for anything not provided.
 
-#### Examples
+## Usage Examples
 
-Specify date and hours, ask for project information and a message:
+Run the gui:
+
+```bash
+java -jar vertecor.jar --ui
+```
+
+Run the gui without any cache:
+
+```bash
+java -jar vertecor.jar --ui --nocache
+```
+
+Use the CLI and specify date and hours; ask for project information and a message:
 
 ```bash
 java -jar vertecor.jar -d 2018-06-15 -h 2.5
 ```
 
-Set everything in command line, don't ask for anything more:
+Use the CLI and set everything in command line, don't ask for anything more:
 
 ```bash
 java -jar vertecor.jar 111,222,333 2.5 "Awesome work"
 ```
 
-Update the cache, pass the hours and description, ask for the project:
+Use the CLI and clears the cache, pass the hours and description, ask for the project:
 
 ```bash
-java -jar vertecor.jar -h 1.5 -m "Good job" --nocache
+java -jar vertecor.jar -h 1.5 -m "Good job" --clearcache
 ```
 
 You get the point :)
 
 ## Some things to be aware of
 
-+ Project related entries are cached. They are fetched very first time and cached locally. This improves the speed. To invalidate the cache, just pass the `--nocache` option.
++ Project related entries are **cached**. They are fetched very first time and cached locally. This improves the speed. To invalidate the cache, just pass the `--clearcache` option.
++ Cache can be ignored by passing `--nocache` option.
 + Username & password in stored in the cache folder, too, in plaintext. Yeah.
 + Cache folder is located at `~/.vertec`.
-+ Compiled on Java8.
++ Works on Java8.
 + You need UTF8 font in console.
-+ This was coded in couple of hours.
-+ No idea how it looks on Windows :)
 
 ## Development notes
 
@@ -92,6 +109,8 @@ It's easy to build:
 ```bash
 ./gradlew clean jar
 ```
+
+Disclaimer: I made this project to learn German. Please do not use it to enter Vertec times.
 
 ## License
 
