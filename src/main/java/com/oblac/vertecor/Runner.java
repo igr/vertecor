@@ -1,13 +1,15 @@
 package com.oblac.vertecor;
 
+import com.oblac.vertecor.fx.App;
 import com.oblac.vertecor.model.Phase;
 import com.oblac.vertecor.model.Project;
 import com.oblac.vertecor.model.ServiceType;
 import com.oblac.vertecor.model.TimeEntry;
+import com.oblac.vertecor.model.TimeEntryInput;
 import com.oblac.vertecor.model.User;
 import jodd.chalk.Chalk256;
 import jodd.system.SystemUtil;
-import jodd.util.StringUtil;
+import jodd.util.function.Maybe;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,135 +23,53 @@ import java.util.function.Supplier;
 public class Runner {
 
 	public static void main(String[] args) {
-		CmdLineParser in = new CmdLineParser().parse(args);
-
-		final Cache cache = new Cache(in.isNoCache(), in.isClearCache());
-
-		new Runner().letsgo(
-			in.getSignature(),
-			in.getHours(),
-			in.getMessage(),
-			in.getDate(),
-			cache
-		);
-	}
-
-	private void letsgo(
-			final String signature,
-			final String hours,
-			final String message,
-			final String date,
-			final Cache cache
-	) {
-
 		if (SystemUtil.info().isWindows()) {
 			Chalk256.enabled = false;
 		}
+
+		CmdLineParser in = new CmdLineParser().parse(args);
 
 		System.out.println();
 		System.out.println(Chalk256.chalk().red().on("    VERTECOR v2.0"));
 		System.out.println(Chalk256.chalk().gray().on("(coded with ❤  by igsp)"));
 		System.out.println();
 
-		final VertecXml vertecXml = new VertecXml(cache);
+		// create components
 
-		final VertecCredentials vs = pickVertecCredentials(vertecXml);
+		final VertecSession vertecSession = new VertecSession(in.isNoCache(), in.isClearCache());
 
-		if (!vertecXml.authenticateUser(vs)) {
-			System.err.println("Invalid credentials. More luck next time!");
-			return;
-		}
-
-		final User user = vertecXml.loadUser();
-
-		System.out.println("Hello, " + Chalk256.chalk().green().on(user.getFullName()) + " :)");
-
-		// parse the signature
-
-		Integer projectId = null;
-		Integer phaseId = null;
-		Integer serviceTypeId = null;
-
-		if (signature != null) {
-			String[] split = StringUtil.splitc(signature, ',');
-			if (split.length >= 1) {
-				projectId = Integer.parseInt(split[0].trim());
-			}
-			if (split.length >= 2) {
-				phaseId = Integer.parseInt(split[1].trim());
-			}
-			if (split.length >= 3) {
-				serviceTypeId = Integer.parseInt(split[2].trim());
-			}
-		}
-
-		// continue with picking
-
-		final Project project = with(
-			projectId, vertecXml::loadProject,
-			() -> pickAProject(vertecXml, user));
-
-		final Phase phase = with(
-			phaseId, vertecXml::loadPhase,
-			() -> pickAPhase(vertecXml, project));
-
-		final ServiceType serviceType = with(
-			serviceTypeId, vertecXml::loadServiceType,
-			() -> pickAServiceType(vertecXml, project));
-
-		if (signature == null) {
-			System.out.println();
-			System.out.println(Chalk256.chalk().gray().on("TIP: you can pass this combination as: " + project.getId() + "," + phase.getId() + "," + serviceType.getId()));
-		}
-
-		final String description = with(
-			message, m -> m,
-			() -> readLine("> Now enter a description:\n")
-		);
-
-		final double time = with(
-			hours, Double::parseDouble,
-			() -> readDouble("> How many HOURS have you spent (you can enter decimals, too)?\n")
-		);
-
-		final String isoDate = date == null ? LocalDate.now().toString() : date;
-
-		TimeEntry timeEntry = new TimeEntry();
-
-		timeEntry
-			.setProject(project)
-			.setPhase(phase)
-			.setServiceType(serviceType)
-			.setDescription(description)
-			.setMinutes((int) (time * 60))
-			.setDate(isoDate);
-
-		System.out.println();
-		System.out.println(Chalk256.chalk().cyan().on("Lay back, the Vertec is being updated..."));
-
-		boolean success = vertecXml.storeTimeEntry(user, timeEntry);
-
-		if (success) {
-			System.out.println(Chalk256.chalk().green().on("Done."));
-			System.out.println();
+		if (in.isUseUI()) {
+			App.vertec = vertecSession;
+			App.launch(App.class);
 		}
 		else {
-			System.out.println("Something went wrong!");
-			System.out.println();
+			new Runner(vertecSession, in.getTimeEntryInput()).letsgo();
 		}
 	}
 
+
+	// ---------------------------------------------------------------- letsgo
+
+	final VertecSession vertec;
+	final TimeEntryInput timeEntryInput;
+
+	public Runner(VertecSession vertec, TimeEntryInput timeEntryInput) {
+		this.vertec = vertec;
+		this.timeEntryInput = timeEntryInput;
+	}
+
+	public void letsgo() {
+		vertec.loadCachedVertecCredentials()
+			.or(Maybe.of(pickVertecCredentials()))
+			.map(vertec::authAndLoadUser)
+			.map(this::inputTimeEntry)
+			.consume(vertec::storeTimeEntry);
+	}
+
+
 	// ---------------------------------------------------------------- pickers
 
-	/**
-	 * Picks username and password.
-	 */
-	private VertecCredentials pickVertecCredentials(VertecXml vertecXml) {
-		VertecCredentials vc = vertecXml.credentialsFromCache(null);
-		if (vc != null) {
-			return vc;
-		}
-
+	private VertecCredentials pickVertecCredentials() {
 		System.out.println("> Please, introduce yourself:");
 		System.out.println(Chalk256.chalk().gray().on("(you have to do this only once)"));
 
@@ -157,20 +77,64 @@ public class Runner {
 		String password = readLine("password: ");
 		System.out.println();
 
-		vc = new VertecCredentials();
+		final VertecCredentials vc = new VertecCredentials();
 		vc.setUsername(username);
 		vc.setPassword(password);
-
-		vertecXml.credentialsFromCache(vc);
 
 		return vc;
 	}
 
-	private Project pickAProject(VertecXml vertecXml, User user) {
+	private TimeEntry inputTimeEntry(User user) {
+		final Project project = with(
+			timeEntryInput.getProjectId(), vertec::loadProject,
+			this::pickAProject);
+
+		final Phase phase = with(
+			timeEntryInput.getPhaseId(), vertec::loadProjectPhase,
+			() -> pickAPhase(project));
+
+		final ServiceType serviceType = with(
+			timeEntryInput.getServiceTypeId(), vertec::loadServiceType,
+			() -> pickAServiceType(project));
+
+		if (timeEntryInput.getSignature() == null) {
+			System.out.println();
+			System.out.println(
+				Chalk256.chalk().gray().on
+					("TIP: you can pass this combination as: " + project.getId() + "," + phase.getId() + "," + serviceType.getId()));
+		}
+
+		final String description = with(
+			timeEntryInput.getMessage(), m -> m,
+			() -> readLine("> Now enter a description:\n")
+		);
+
+		final double time = with(
+			timeEntryInput.getHours(), Double::parseDouble,
+			() -> readDouble("> How many HOURS have you spent (you can enter decimals, too)?\n")
+		);
+
+		final String isoDate = timeEntryInput.getDate() == null ? LocalDate.now().toString() : timeEntryInput.getDate();
+
+		final TimeEntry timeEntry = new TimeEntry();
+
+		timeEntry
+			.setUser(user)
+			.setProject(project)
+			.setPhase(phase)
+			.setServiceType(serviceType)
+			.setDescription(description)
+			.setMinutes((int) (time * 60))
+			.setDate(isoDate);
+
+		return timeEntry;
+	}
+
+	private Project pickAProject() {
 		System.out.println();
 		System.out.println("> Your projects:");
 
-		List<Project> projectList = vertecXml.loadUserActiveProjects(user);
+		List<Project> projectList = vertec.loadAllProjects();
 
 		for (int i = 0; i < projectList.size(); i++) {
 			Project project = projectList.get(i);
@@ -183,11 +147,11 @@ public class Runner {
 		return projectList.get(option - 1);
 	}
 
-	private Phase pickAPhase(VertecXml vertecXml, Project project) {
+	private Phase pickAPhase(Project project) {
 		System.out.println();
 		System.out.println("> Project phases:");
 
-		List<Phase> phasesList = vertecXml.loadProjectPhases(project);
+		List<Phase> phasesList = vertec.loadAllProjectPhases(project);
 
 		for (int i = 0; i < phasesList.size(); i++) {
 			Phase phase = phasesList.get(i);
@@ -200,11 +164,11 @@ public class Runner {
 		return phasesList.get(option - 1);
 	}
 
-	private ServiceType pickAServiceType(VertecXml vertecXml, Project project) {
+	private ServiceType pickAServiceType(Project project) {
 		System.out.println();
 		System.out.println("> Service Types:");
 
-		List<ServiceType> serviceTypeList = vertecXml.loadServiceTypes(project);
+		List<ServiceType> serviceTypeList = vertec.loadAllServiceTypes(project);
 
 		for (int i = 0; i < serviceTypeList.size(); i++) {
 			ServiceType serviceType = serviceTypeList.get(i);
@@ -217,7 +181,7 @@ public class Runner {
 		return serviceTypeList.get(option - 1);
 	}
 
-	// ---------------------------------------------------------------- with
+	// ---------------------------------------------------------------- utils
 
 	private <IN, OUT> OUT with(IN in, Function<IN, OUT> function, Supplier<OUT> supplier) {
 		if (in != null) {
@@ -225,8 +189,6 @@ public class Runner {
 		}
 		return supplier.get();
 	}
-
-	// ---------------------------------------------------------------- utils
 
 	private String readLine(String message) {
 		System.out.println();
