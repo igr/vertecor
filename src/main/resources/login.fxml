@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" styleClass="root" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oblac.vertecor.fx.LoginController">
+   <children>
+      <AnchorPane prefHeight="150.0" prefWidth="600.0" styleClass="topPane" />
+      <AnchorPane layoutX="118.0" layoutY="36.0" prefHeight="514.0" prefWidth="365.0" styleClass="cardPane">
+         <children>
+            <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="123.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@user.png" />
+               </image>
+            </ImageView>
+            <TextField fx:id="username" layoutX="33.0" layoutY="237.0" prefHeight="40.0" prefWidth="300.0" promptText="Username" />
+            <PasswordField fx:id="password" layoutX="33.0" layoutY="295.0" prefHeight="40.0" prefWidth="300.0" promptText="Password" />
+            <Button fx:id="signUpButton" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="93.0" layoutY="394.0" mnemonicParsing="false" onAction="#signup" prefHeight="50.0" prefWidth="180.0" styleClass="bigbutton" text="Yes, that's me." textAlignment="CENTER" />
+            <Label alignment="CENTER" layoutX="33.0" layoutY="172.0" prefHeight="40.0" prefWidth="300.0" text="Who wants fast Vertec?" textAlignment="CENTER" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
