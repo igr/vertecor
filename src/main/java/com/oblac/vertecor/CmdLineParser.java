@@ -1,15 +1,14 @@
 package com.oblac.vertecor;
 
+import com.oblac.vertecor.model.TimeEntryInput;
 import jodd.cli.Cli;
 
 public class CmdLineParser {
 
+	final TimeEntryInput timeEntryInput = new TimeEntryInput();
 	boolean noCache = false;
 	boolean clearCache = false;
-	String signature = null;
-	String message = null;
-	String hours = null;
-	String date = null;
+	boolean useUI;
 
 	public boolean isNoCache() {
 		return noCache;
@@ -19,64 +18,62 @@ public class CmdLineParser {
 		return clearCache;
 	}
 
-	public String getSignature() {
-		return signature;
+	public boolean isUseUI() {
+		return useUI;
 	}
 
-	public String getMessage() {
-		return message;
-	}
-
-	public String getHours() {
-		return hours;
-	}
-
-	public String getDate() {
-		return date;
+	public TimeEntryInput getTimeEntryInput() {
+		return timeEntryInput;
 	}
 
 	public CmdLineParser parse(String[] args) {
 		Cli cli = new Cli();
 
+
+		cli.option()
+			.longName("ui")
+			.description("Use UI because why not")
+			.with(v -> useUI = true);
+
 		cli.option()
 			.longName("nocache")
 			.description("Disables the cache - nothing will be stored locally. Existing cache will not be used.")
-			.with(v -> this.noCache = true);
+			.with(v -> noCache = true);
 
 		cli.option()
 			.longName("clearcache")
 			.description("Clears the cache before the usage.")
-			.with(v -> this.noCache = true);
+			.with(v -> noCache = true);
 
 		cli.option()
 			.shortName("d")
 			.longName("date")
-			.with(v -> this.date = v);
+			.with(timeEntryInput::setDate);
 
 		cli.option()
 			.shortName("m")
 			.longName("message")
-			.with(v -> this.message = v);
+			.with(timeEntryInput::setMessage);
 
 		cli.option()
 			.shortName("h")
 			.longName("hours")
-			.with(v -> this.hours = v);
+			.with(timeEntryInput::setHours);
 
 		cli.param()
 			.label("IDS")
 			.description("Project-phase-type IDs")
-			.with(v -> this.signature = v[0]);
+			.with(v -> timeEntryInput.setSignature(v[0]));
 
 		cli.param()
 			.label("HOURS")
 			.description("Working hours")
-			.with(v -> this.hours = v[0]);
+			.with(v -> timeEntryInput.setHours(v[0]));
 
 		cli.param()
 			.label("DESCRIPTION")
 			.description("Description message")
-			.with(v -> this.message = v[0]);
+			.with(v -> timeEntryInput.setMessage(v[0]));
 
 		cli.accept(args);
 
