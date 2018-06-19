@@ -31,4 +31,9 @@ public class ServiceType {
 		this.active = active;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return code;
+	}
 }

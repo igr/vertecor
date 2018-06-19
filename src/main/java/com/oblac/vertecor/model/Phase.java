@@ -43,4 +43,9 @@ public class Phase {
 	public List<Integer> getSubphases() {
 		return subphases;
 	}
+
+	@Override
+	public String toString() {
+		return code;
+	}
 }

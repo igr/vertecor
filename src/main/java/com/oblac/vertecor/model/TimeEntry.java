@@ -2,12 +2,22 @@ package com.oblac.vertecor.model;
 
 public class TimeEntry {
 
+	private User user;
 	private Project project;
 	private Phase phase;
 	private ServiceType serviceType;
 	private String description;
 	private int minutes;
 	private String date;
+
+	public User getUser() {
+		return user;
+	}
+
+	public TimeEntry setUser(User user) {
+		this.user = user;
+		return this;
+	}
 
 	public Project getProject() {
 		return project;

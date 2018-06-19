@@ -64,4 +64,9 @@ public class Project {
 		this.phases = phases;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return code + " - " + description;
+	}
 }
