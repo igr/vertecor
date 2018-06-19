@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Simple low-level Vertec XML client.
+ * Contains just API and no business logic.
+ */
 public class VertecXml {
 
 	private final Cache cache;
@@ -41,6 +45,9 @@ public class VertecXml {
 			});
 	}
 
+	/**
+	 * Loads user data.
+	 */
 	public User loadUser() {
 		HttpResponse httpResponse = post(
 				"<Query>" +
@@ -206,10 +213,10 @@ public class VertecXml {
 
 	// ---------------------------------------------------------------- create
 
-	public boolean storeTimeEntry(User user, TimeEntry timeEntry) {
+	public boolean storeTimeEntry(TimeEntry timeEntry) {
         return post(
         	"<Create><OffeneLeistung>" +
-		        "<bearbeiter><objref>" + user.getUserId() + "</objref></bearbeiter>" +
+		        "<bearbeiter><objref>" + timeEntry.getUser().getUserId() + "</objref></bearbeiter>" +
 		        "<projekt><objref>" + timeEntry.getProject().getId() + "</objref></projekt>" +
 		        "<phase><objref>" + timeEntry.getPhase().getId() + "</objref></phase>" +
 		        "<typ><objref>" + timeEntry.getServiceType().getId() + "</objref></typ>" +
