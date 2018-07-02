@@ -73,7 +73,7 @@ public class App extends Application {
 			stage.show();
 		}
 		else {
-			vcMaybe.consume(this::onVertexCredentialsAvailable);
+			vcMaybe.consumeJust(this::onVertexCredentialsAvailable);
 		}
 	}
 

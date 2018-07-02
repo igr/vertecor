@@ -16,6 +16,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
@@ -63,6 +65,23 @@ public class EntryController implements Initializable {
 				} else {
 					return null;
 				}
+			}
+		});
+
+		// let TAB on textarea move to next field
+		descriptionText.setOnKeyPressed(event -> {
+			KeyCode code = event.getCode();
+			if (code == KeyCode.TAB && !event.isShiftDown() && !event.isControlDown()) {
+				event.consume();
+				Node node = (Node) event.getSource();
+				KeyEvent newEvent = new KeyEvent(event.getSource(),
+					event.getTarget(), event.getEventType(),
+					event.getCharacter(), event.getText(),
+					event.getCode(), event.isShiftDown(),
+					true, event.isAltDown(),
+					event.isMetaDown());
+
+				node.fireEvent(newEvent);
 			}
 		});
 	}

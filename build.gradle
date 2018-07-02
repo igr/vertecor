@@ -2,7 +2,7 @@
 apply plugin: 'java'
 
 group 'com.oblac'
-version '2.0'
+version '2.0.1'
 
 sourceCompatibility = 1.8
 
@@ -12,15 +12,14 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jodd:jodd-lagarto:5.0.1-20180618'
-    compile 'org.jodd:jodd-http:5.0.1-20180618'
-    compile 'org.jodd:jodd-json:5.0.1-20180618'
+    compile 'org.jodd:jodd-lagarto:5.0.2'
+    compile 'org.jodd:jodd-http:5.0.2'
+    compile 'org.jodd:jodd-json:5.0.2'
 }
 
 jar {
     manifest {
         attributes(
-                'Class-Path': configurations.compileClasspath.files.collect {"$it.name"}.join(' '),
                 'Main-Class': 'com.oblac.vertecor.Runner'
         )
     }
