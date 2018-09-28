@@ -30,7 +30,7 @@ public class Runner {
 		CmdLineParser in = new CmdLineParser().parse(args);
 
 		System.out.println();
-		System.out.println(Chalk256.chalk().red().on("    VERTECOR v2.0.1"));
+		System.out.println(Chalk256.chalk().red().on("    VERTECOR v2.0.2"));
 		System.out.println(Chalk256.chalk().gray().on("(coded with ❤  by igsp)"));
 		System.out.println();
 
@@ -60,7 +60,7 @@ public class Runner {
 
 	public void letsgo() {
 		vertec.loadCachedVertecCredentials()
-			.or(Maybe.of(pickVertecCredentials()))
+			.or(() -> Maybe.of(pickVertecCredentials()))
 			.map(vertec::authAndLoadUser)
 			.map(this::inputTimeEntry)
 			.consumeJust(vertec::storeTimeEntry);

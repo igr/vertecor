@@ -1,4 +1,4 @@
-# VERTECOR v2.0.1
+# VERTECOR v2.0.2
 
 > Who likes faster Vertec? 
 
